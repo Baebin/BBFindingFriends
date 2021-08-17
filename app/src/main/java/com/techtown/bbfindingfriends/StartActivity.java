@@ -71,7 +71,8 @@ public class StartActivity extends AppCompatActivity {
                 Log.d(TAG, "Email: " + email + "\n"
                         + "pw: " + pw);
 
-                if (email != null && pw != null) {
+                if (email != null && !email.equals("")
+                    && pw != null && !pw.equals("")) {
 
                     if (email != null && pw != null) {
                         firebaseAuth.signInWithEmailAndPassword(email, pw).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -96,14 +97,18 @@ public class StartActivity extends AppCompatActivity {
                             }
                         });
                     }
+                } else if (firstLogin) {
+                    sendIntent("Login");
                 }
                 break;
             default:
+                sendIntent("Login");
                 break;
         }
     }
 
     private void sendIntent(String data) {
+        Log.d(TAG, "sendIntent(" + data + ")");
         if (data == "Main") {
             Intent intent_Main = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent_Main);
