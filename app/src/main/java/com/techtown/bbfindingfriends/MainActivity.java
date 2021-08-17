@@ -11,10 +11,13 @@ import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "MainActivity";
@@ -28,12 +31,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Log.d(TAG, "onCreate()");
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
+        SupportMapFragment mapFragment = (SupportMapFragment) this.getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+
+        Log.d(TAG, "onMapReady(" + googleMap + ")");
+        /*
+
         map = googleMap;
 
         LatLng SEOUL = new LatLng(37.56, 126.97);
@@ -48,5 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+         */
     }
 }

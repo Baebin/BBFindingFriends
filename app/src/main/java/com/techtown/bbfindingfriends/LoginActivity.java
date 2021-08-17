@@ -76,8 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "button.setOnClickListener() Intent Show");
-                Intent intent_register = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(intent_register);
+                sendIntent("Register");
             }
         });
 
@@ -149,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     switch (result.getResultCode()) {
                         case RESULT_OK:
-                            showToast("로그인되었습니다.");
+                            sendIntent("Main");
                             break;
                         case R.integer.code_loginFailed:
                             showSnackbar("로그인에 실패하였습니다.");
@@ -160,6 +159,18 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
     );
+
+    private void sendIntent(String data) {
+        Log.d(TAG, "sendIntent(" + data + ")");
+        if (data == "Register") {
+            Intent intent_register = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(intent_register);
+        } else if (data == "Main") {
+            Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent_main);
+            finish();
+        }
+    }
 
     /*
     @Override
