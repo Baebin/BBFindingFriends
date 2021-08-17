@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="code_fistLogin">010</integer>
+    <integer name="code_autoLogin">011</integer>
+    <integer name="code_login">100</integer>
+    <integer name="code_loginFailed">101</integer>
+</resources>

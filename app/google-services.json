@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "652752185992",
+    "firebase_url": "https://bbfindme-2394f-default-rtdb.firebaseio.com",
+    "project_id": "bbfindme-2394f",
+    "storage_bucket": "bbfindme-2394f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652752185992:android:ccea9215d23d76ba2fcd3d",
+        "android_client_info": {
+          "package_name": "com.techtown.bbfindingfriends"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652752185992-dpt2cij21m7epm4clh585220d3e36d6t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZunhVBChHCzfzdJcFULGl5oNfxP7oYLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652752185992-dpt2cij21m7epm4clh585220d3e36d6t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
