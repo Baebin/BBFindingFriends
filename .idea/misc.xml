@@ -5,12 +5,19 @@
       <map>
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.23541666666666666" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/background_blue.xml" value="0.375" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/edge.xml" value="0.234375" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/ic_launcher_background.xml" value="0.23541666666666666" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_drawer_main.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_login.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_main.xml" value="0.3146747352496218" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_navheader.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_register.xml" value="0.25" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_start.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_start2.xml" value="0.2" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/menu_appbar_main.xml" value="0.35885416666666664" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/menu_header_main.xml" value="0.35885416666666664" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/menu/main_navigationmenu.xml" value="0.21822916666666667" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/menu/menu_main.xml" value="0.35885416666666664" />
       </map>
     </option>
   </component>
