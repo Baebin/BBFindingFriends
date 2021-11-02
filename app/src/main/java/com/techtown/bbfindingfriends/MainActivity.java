@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -57,6 +61,9 @@ public class MainActivity extends AppCompatActivity
     private TextView tv_nick;
     private Button button_logout;
 
+    FriendsAdapter friendsAdapter;
+    RecyclerView friendView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         fdb = FirebaseDatabase.getInstance();
-        myRef = fdb.getReference("Users");
+        myRef = fdb.getReference(getString(R.string.db_users));
 
         refresh();
 
@@ -99,6 +106,25 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        friendView = findViewById(R.id.friend_layout);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true);
+        friendView.setLayoutManager(linearLayoutManager);
+
+        friendsAdapter = new FriendsAdapter();
+
+        for (int i = 1; i <= 10; i++) {
+            Friend friend = new Friend("OBBYoTm3lYNYRfABYb63LJsHePj2");
+            friend.setName("Test" + i);
+            friendsAdapter.addFriend(friend);
+        }
+
+        // 역순 출력: stack 마지막이 처음 보여지는 위치
+        friendsAdapter.reverseFriends();
+        friendView.setAdapter(friendsAdapter);
+
+        Log.d(TAG, "friendsAdapter Called");
+
         // 위험 권한 자동 부여 요청
         AutoPermissions.Companion.loadAllPermissions(this, 101);
     }
@@ -106,7 +132,7 @@ public class MainActivity extends AppCompatActivity
     private void setUser() {
         user = firebaseAuth.getCurrentUser();
 
-        Log.d(TAG, "setNickname() - user: " + user);
+        Log.d(TAG, "setUser(): " + user);
     }
 
     private void setNickname() {
@@ -117,13 +143,15 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
+        Log.d(TAG, "setNickname() - Test");
+
         myRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                nickname = snapshot.child("Nickname").getValue().toString();
+                nickname = snapshot.child(getString(R.string.db_child_nick)).getValue().toString();
                 setNicknameView();
 
-                Log.d(TAG, "setNickname() - Nickname: " + nickname);
+                Log.d(TAG, "setNickname(): " + nickname);
             }
 
             @Override
