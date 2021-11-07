@@ -54,11 +54,11 @@
             android:layout_weight="10" >
 
             <Button
-                android:id="@+id/button_Test"
+                android:id="@+id/button_friend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Test" />
+                android:text="Friend" />
         </LinearLayout>
 
         <Button

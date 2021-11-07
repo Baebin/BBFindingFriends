@@ -48,7 +48,11 @@ public class Friend {
         myRef.child(this.uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name = snapshot.child("Nickname").getValue().toString();
+                if (snapshot.child("Nickname").exists()) {
+                    name = snapshot.child("Nickname").getValue().toString();
+                } else {
+                    name = "Null";
+                }
             }
 
             @Override

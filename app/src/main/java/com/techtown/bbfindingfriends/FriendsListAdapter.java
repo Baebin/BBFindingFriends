@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -13,13 +14,13 @@ import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHolder> {
+public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
     ArrayList<Friend> friendArrayList = new ArrayList<Friend>();
 
-    private OnFriendsClickListener listener;
+    private OnFriendsClickListener friendsClickListener = null;
 
-    public void setOnItemClickListener(OnFriendsClickListener listener) {
-        this.listener = listener;
+    public void setOnFriendsClickListener(OnFriendsClickListener listener) {
+        this.friendsClickListener = listener;
     }
 
     public void addFriend(Friend friend) {
@@ -48,15 +49,15 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
 
     @NonNull
     @Override
-    public FriendsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendsListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View friendView = inflater.inflate(R.layout.friend_item, parent, false);
+        View friendView = inflater.inflate(R.layout.friend_card_item, parent, false);
 
-        return new ViewHolder(friendView, listener);
+        return new FriendsListAdapter.ViewHolder(friendView, friendsClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FriendsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Friend friend = friendArrayList.get(position);
         holder.setFriend(friend);
     }
@@ -67,18 +68,35 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView nick;
+        TextView nick, uid;
         CircleImageView image;
+
+        CardView cardView;
 
         public ViewHolder(@NonNull View itemView, OnFriendsClickListener listener) {
             super(itemView);
 
             image = itemView.findViewById(R.id.iv_image);
             nick = itemView.findViewById(R.id.tv_name);
+            uid = itemView.findViewById(R.id.tv_uid);
+
+            cardView = itemView.findViewById(R.id.cardView);
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        friendsClickListener.onItemLongClickListener(ViewHolder.this, view, position);
+                        return true;
+                    }
+                    return false;
+                }
+            });
         }
 
         public void setFriend(Friend friend) {
             nick.setText(friend.getName());
+            uid.setText(friend.getUid());
         }
     }
 }

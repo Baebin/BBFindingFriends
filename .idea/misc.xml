@@ -11,7 +11,9 @@
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.22604166666666667" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.22604166666666667" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/drawable/side_nav_bar.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/actitiy_friend.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_drawer_main.xml" value="0.35885416666666664" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_friend_search.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_navheader.xml" value="0.21822916666666667" />
@@ -20,12 +22,16 @@
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_start.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/activity_start2.xml" value="0.2" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/content_navi.xml" value="0.20989583333333334" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/fragment_friend_list.xml" value="0.35885416666666664" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/fragment_friend_search.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/fragment_gallery.xml" value="0.20989583333333334" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/fragment_home.xml" value="0.20989583333333334" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/friend_card_item.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/friend_item.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/menu_appbar_main.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/menu_header_main.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/layout/nav_header_navi.xml" value="0.20989583333333334" />
+        <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/menu/friend.xml" value="0.35885416666666664" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/menu/main_navigationmenu.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/NUNE/AndroidStudioProjects/BBFindingFriends/app/src/main/res/menu/menu_main.xml" value="0.35885416666666664" />
       </map>

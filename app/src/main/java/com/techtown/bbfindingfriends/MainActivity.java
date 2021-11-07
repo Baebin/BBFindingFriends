@@ -1,5 +1,15 @@
 package com.techtown.bbfindingfriends;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -7,21 +17,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.nfc.Tag;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,9 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
-import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback, AutoPermissionsListener {
@@ -60,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private ImageView iv_profile;
     private TextView tv_nick;
     private Button button_logout;
+    private Button button_friend;
 
     FriendsAdapter friendsAdapter;
     RecyclerView friendView;
@@ -106,6 +102,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        button_friend = findViewById(R.id.button_friend);
+        button_friend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendIntent("Friend");
+            }
+        });
+
         friendView = findViewById(R.id.friend_layout);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true);
@@ -113,20 +117,78 @@ public class MainActivity extends AppCompatActivity
 
         friendsAdapter = new FriendsAdapter();
 
-        for (int i = 1; i <= 10; i++) {
-            Friend friend = new Friend("OBBYoTm3lYNYRfABYb63LJsHePj2");
-            friend.setName("Test" + i);
-            friendsAdapter.addFriend(friend);
-        }
-
-        // 역순 출력: stack 마지막이 처음 보여지는 위치
-        friendsAdapter.reverseFriends();
-        friendView.setAdapter(friendsAdapter);
-
         Log.d(TAG, "friendsAdapter Called");
 
         // 위험 권한 자동 부여 요청
         AutoPermissions.Companion.loadAllPermissions(this, 101);
+    }
+
+    private void setAdapter() {
+        Log.d(TAG, "setAdapter()");
+
+        friendsAdapter.resetFriends();
+
+        myRef.child(user.getUid()).child(getString(R.string.db_child_friends)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count = (int) snapshot.getChildrenCount();
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    // Uid
+                    String uid = dataSnapshot.getKey();
+                    Log.d(TAG, "setAdapter() - Loading " + uid);
+
+                    count--;
+
+                    String nickname = dataSnapshot.getValue().toString();
+
+                    Friend friend = new Friend(uid);
+                    friend.setName(nickname);
+                    friend.setUid(uid);
+
+                    int finalCount = count;
+                    myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot friendSnapshot) {
+                            if (nickname.equals(getString(R.string.db_value_null))) {
+                                String friendName = friendSnapshot.child(getString(R.string.db_child_nick)).getValue().toString();
+                                friend.setName(friendName);
+
+                                Log.d(TAG, "setAdapter() - Loading Nickname: " + friendName);
+                            }
+
+                            friendsAdapter.addFriend(friend);
+                            Log.d(TAG, "setAdapter() - Added " + uid + ": " + nickname);
+
+                            if (finalCount == 0) {
+                                // 역순 출력: stack 마지막이 처음 보여지는 위치
+                                friendsAdapter.reverseFriends();
+                                friendView.setAdapter(friendsAdapter);
+                                friendView.smoothScrollToPosition(friendsAdapter.getItemCount()-1);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError friendError) {
+                            Log.d(TAG, "setAdapter() - Loading Nickname - The read failed: " + friendError.getCode());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "setAdapter() - The read failed: " + error.getCode());
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.d(TAG, "onStart()");
+        setAdapter();
     }
 
     private void setUser() {
@@ -194,6 +256,10 @@ public class MainActivity extends AppCompatActivity
         if (data == "Login") {
             Intent intent_Login = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent_Login);
+        } else if (data == "Friend") {
+            Intent intent_Friend = new Intent(getApplicationContext(), FriendActivity.class);
+            startActivity(intent_Friend);
+            return;
         }
         finish();
     }
@@ -201,7 +267,6 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout.DrawerListener drawerListener = new DrawerLayout.DrawerListener() {
         @Override
         public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            refresh();
         }
 
         @Override
@@ -212,11 +277,15 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onDrawerClosed(@NonNull View drawerView) {
             refresh();
+            friendView.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onDrawerStateChanged(int newState) {
-            refresh();
+            Log.d(TAG, "onDrawerStateChanged(" + newState + ")");
+            if (newState == 1) {
+                friendView.setVisibility(View.INVISIBLE);
+            }
         }
     };
 

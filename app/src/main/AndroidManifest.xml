@@ -38,6 +38,9 @@
             android:name=".RegisterActivity"
             android:exported="true" />
         <activity
+            android:name=".FriendActivity"
+            android:exported="true" />
+        <activity
             android:name=".StartActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Dialog" >
