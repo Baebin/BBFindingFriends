@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="15dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TextAppearance.Compat.Notification.Info.Media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BB 친구 찾기"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Null"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -3,6 +3,7 @@
     <string name="db_users">Users</string>
     <string name="db_child_nick">Nickname</string>
     <string name="db_child_friends">Friends</string>
+    <string name="db_child_location">Location</string>
     <string name="db_value_null">$Null$</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

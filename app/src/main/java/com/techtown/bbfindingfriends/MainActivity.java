@@ -2,6 +2,8 @@ package com.techtown.bbfindingfriends;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -13,16 +15,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,8 +63,12 @@ public class MainActivity extends AppCompatActivity
     private Button button_logout;
     private Button button_friend;
 
+    private FriendLocation myLocation = new FriendLocation();
+
     FriendsAdapter friendsAdapter;
     RecyclerView friendView;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +87,8 @@ public class MainActivity extends AppCompatActivity
         // GoogleMap
         SupportMapFragment mapFragment = (SupportMapFragment) this.getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer_view);
@@ -189,6 +201,7 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(TAG, "onStart()");
         setAdapter();
+        startService();
     }
 
     private void setUser() {
@@ -261,6 +274,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent_Friend);
             return;
         }
+
         finish();
     }
 
@@ -288,6 +302,66 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+
+    private void startService() {
+        Log.d(TAG, "startService()");
+        Intent intent_service = new Intent(this, ForegroundService.class);
+        ContextCompat.startForegroundService(this, intent_service);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(TAG, "onNewIntent()");
+        setLocation(intent);
+        super.onNewIntent(intent);
+    }
+
+    private void setLocation(Intent intent) {
+        Log.d(TAG, "setLocation()");
+
+        int exception = R.integer.code_location_null;
+
+        double mLatitude = intent.getDoubleExtra("Latitude", exception);
+        double mLongtitude = intent.getDoubleExtra("Longtitude", exception);
+        double mAltitude = intent.getDoubleExtra("Altitude", exception);
+
+        if (mLatitude != exception
+            && mLongtitude != exception
+            && mAltitude != exception) {
+
+            myLocation.setLatitude(mLatitude);
+            myLocation.setLongtitude(mLongtitude);
+            myLocation.setAltitude(mAltitude);
+
+            Log.d(TAG, "gpsListener() - \n"
+                    + "Latitude: " + mLatitude + "\n"
+                    + "Longtitude: " + mLongtitude + "\n"
+                    + "Altitude: " + mAltitude);
+
+            saveMyLocation();
+        } else {
+            String[] exceptionList = new String[] {"Failed", "Failed", "Failed"};
+
+            if (mLatitude != exception) exceptionList[0] = "(Complete) " + mLatitude;
+            if (mLongtitude != exception) exceptionList[1] = "(Complete) " + mLongtitude;
+            if (mAltitude != exception) exceptionList[2] = "(Complete) " + mAltitude;
+
+            Log.d(TAG, "setLocation() - Failed: \n"
+                    + "Latitude: " + exceptionList[0] + "\n"
+                    + "Longtitude: " + exceptionList[1] + "\n"
+                    + "Altitude: " + exceptionList[2]);
+        }
+    }
+
+    private void saveMyLocation() {
+        Log.d(TAG, "saveLocation()");
+        if (!myLocation.checkException()) {
+            Log.d(TAG, "saveLocation() - Failed");
+            return;
+        }
+
+        myRef.child(user.getUid()).child(getString(R.string.db_child_location)).setValue(myLocation);
+    }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -322,6 +396,18 @@ public class MainActivity extends AppCompatActivity
 
         map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
+
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    Log.d(TAG, "onMapReady() - " + location.getLatitude() + ":" + location.getLongitude());
+                    LatLng curLoc = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLng(curLoc));
+                    map.animateCamera(CameraUpdateFactory.zoomIn());
+                }
+            }
+        });
     }
 
     @Override
@@ -331,6 +417,7 @@ public class MainActivity extends AppCompatActivity
         // Allow: onGranted() Method Call
         // Deny: onDenied() Method Call
         AutoPermissions.Companion.parsePermissions(this, requestCode, permissions, this);
+
     }
 
     @Override
