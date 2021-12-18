@@ -3,7 +3,6 @@ package com.techtown.bbfindingfriends;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,8 +27,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     private DrawerLayout drawerLayout;
     private View drawerView;
+    private View main_layout;
 
     private GoogleMap map;
 
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer_view);
+        main_layout = findViewById(R.id.main_layout);
 
         drawerLayout.addDrawerListener(drawerListener);
         drawerView.setOnTouchListener(new View.OnTouchListener() {
@@ -128,11 +132,41 @@ public class MainActivity extends AppCompatActivity
         friendView.setLayoutManager(linearLayoutManager);
 
         friendsAdapter = new FriendsAdapter();
+        friendsAdapter.setOnItemClickListener(new OnFriendsClickListener() {
+            @Override
+            public void onItemClickListener(FriendsAdapter.ViewHolder holder, View view, int position) {
+                Log.d(TAG, "friendsAdapter.onItemClickListener() : " + position);
+
+                Friend friend = friendsAdapter.getFriend(position);
+                zoomToFriend(friend);
+            }
+
+            @Override
+            public void onItemClickListener(FriendsListAdapter.ViewHolder holder, View view, int position) {
+            }
+
+            @Override
+            public void onItemLongClickListener(FriendsAdapter.ViewHolder holder, View view, int position) {
+            }
+
+            @Override
+            public void onItemLongClickListener(FriendsListAdapter.ViewHolder holder, View view, int position) {
+            }
+        });
 
         Log.d(TAG, "friendsAdapter Called");
 
         // 위험 권한 자동 부여 요청
         AutoPermissions.Companion.loadAllPermissions(this, 101);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.d(TAG, "onStart()");
+        setAdapter();
+        startService();
     }
 
     private void setAdapter() {
@@ -158,6 +192,8 @@ public class MainActivity extends AppCompatActivity
                     friend.setName(nickname);
                     friend.setUid(uid);
 
+                    friend.checkFriend(user);
+
                     int finalCount = count;
                     myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -173,8 +209,12 @@ public class MainActivity extends AppCompatActivity
                             Log.d(TAG, "setAdapter() - Added " + uid + ": " + nickname);
 
                             if (finalCount == 0) {
+                                // 서로 친구 추가 상태 확인
+                                friendsAdapter.checkFriends();
+
                                 // 역순 출력: stack 마지막이 처음 보여지는 위치
                                 friendsAdapter.reverseFriends();
+
                                 friendView.setAdapter(friendsAdapter);
                                 friendView.smoothScrollToPosition(friendsAdapter.getItemCount()-1);
                             }
@@ -195,88 +235,13 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-        Log.d(TAG, "onStart()");
-        setAdapter();
-        startService();
-    }
 
-    private void setUser() {
-        user = firebaseAuth.getCurrentUser();
 
-        Log.d(TAG, "setUser(): " + user);
-    }
 
-    private void setNickname() {
-        Log.d(TAG, "setNickname()");
-        nickname = null;
-        if (user == null) {
-            setNicknameView();
-            return;
-        }
-
-        Log.d(TAG, "setNickname() - Test");
-
-        myRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                nickname = snapshot.child(getString(R.string.db_child_nick)).getValue().toString();
-                setNicknameView();
-
-                Log.d(TAG, "setNickname(): " + nickname);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                setNicknameView();
-                Log.d(TAG, "setNickname() - The read failed: " + error.getCode());
-            }
-        });
-    }
-
-    private void setNicknameView() {
-        Log.d(TAG, "setNicknameView()");
-        if (nickname == null) {
-            tv_nick.setText("Null");
-            Log.d(TAG, "setNicknameView() - Null");
-        } else {
-            tv_nick.setText(nickname);
-            Log.d(TAG, "setNicknameView() - " + nickname);
-        }
-    }
-
-    private void refresh() {
-        setUser();
-        setNickname();
-    }
-
-    private void logout() {
-        Log.d(TAG, "logout()");
-        if (firebaseAuth.getCurrentUser() == null) {
-            Log.d(TAG, "logout() - Failed");
-            return;
-        }
-        firebaseAuth.signOut();
-        sendIntent("Login");
-        Log.d(TAG, "logout() - Successful");
-    }
-
-    private void sendIntent(String data) {
-        Log.d(TAG, "sendIntent(" + data + ")");
-        if (data == "Login") {
-            Intent intent_Login = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent_Login);
-        } else if (data == "Friend") {
-            Intent intent_Friend = new Intent(getApplicationContext(), FriendActivity.class);
-            startActivity(intent_Friend);
-            return;
-        }
-
-        finish();
-    }
+    //
+    // GUI System
+    //
 
     DrawerLayout.DrawerListener drawerListener = new DrawerLayout.DrawerListener() {
         @Override
@@ -302,6 +267,30 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+
+    public void showToast(String data) {
+        Log.d(TAG, "showToast(" + data + ")");
+        Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+    }
+
+    public void showSnackbar(String data) {
+        Log.d(TAG, "showSnackbar(" + data + ")");
+        final Snackbar snackbar = Snackbar.make(main_layout, data, Snackbar.LENGTH_SHORT);
+        snackbar.setAction("확인", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        }).show();
+    }
+
+
+
+
+
+    //
+    // Background GPS Service
+    //
 
     private void startService() {
         Log.d(TAG, "startService()");
@@ -355,12 +344,81 @@ public class MainActivity extends AppCompatActivity
 
     private void saveMyLocation() {
         Log.d(TAG, "saveLocation()");
-        if (!myLocation.checkException()) {
+
+        FriendLocationExceptionManger exceptionManger = new FriendLocationExceptionManger(myLocation);
+        if (exceptionManger.checkException()) {
             Log.d(TAG, "saveLocation() - Failed");
             return;
         }
 
         myRef.child(user.getUid()).child(getString(R.string.db_child_location)).setValue(myLocation);
+    }
+
+
+
+
+
+    //
+    // Google Map System
+    //
+
+    private void zoomToFriend(Friend friend) {
+        String friendUid = friend.getUid();
+        Log.d(TAG, "zoomToFriend() - " + friendUid);
+
+        myRef.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String child_loc = getString(R.string.db_child_location);
+
+                if (!snapshot.child(child_loc).exists()) {
+                    Log.d(TAG, "zoomToFriend() - Error Code: L101");
+                    showSnackbar("위치 정보를 조회할 수 없습니다. - Error Code: L101");
+                    return;
+                }
+
+                FriendLocation fLoc = snapshot.child(child_loc).getValue(FriendLocation.class);
+                FriendLocationExceptionManger exceptionManger = new FriendLocationExceptionManger(fLoc);
+
+                if (exceptionManger.checkException()) {
+                    String exception = exceptionManger.getException();
+
+                    Log.d(TAG, "zoomToFriend() - Error Code: " + exception);
+                    showSnackbar("위치 정보를 조회할 수 없습니다. - Error Code: " + exception);
+                    return;
+                }
+
+                addMarker(fLoc, friend.getName(), "친구 위치");
+                moveMap(fLoc);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "zoomToFriend() - The read failed: " + error.getCode());
+            }
+        });
+    }
+
+    private void addMarker(FriendLocation location, String title, String snippet) {
+        Log.d(TAG, "addMarker(): ");
+
+        LatLng lng = new LatLng(location.getLatitude(), location.getLongtitude());
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(lng);
+        markerOptions.title(title);
+        markerOptions.snippet(snippet);
+
+        map.addMarker(markerOptions);
+    }
+
+    private void moveMap(FriendLocation location) {
+        Log.d(TAG, "moveMap()");
+
+        LatLng lng = new LatLng(location.getLatitude(), location.getLongtitude());
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(lng));
+        map.animateCamera(CameraUpdateFactory.zoomTo(16));
     }
 
     @Override
@@ -409,6 +467,100 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+
+
+
+
+    //
+    // Account Method
+    //
+
+    private void setUser() {
+        user = firebaseAuth.getCurrentUser();
+
+        Log.d(TAG, "setUser(): " + user);
+    }
+
+    private void setNickname() {
+        Log.d(TAG, "setNickname()");
+        nickname = null;
+        if (user == null) {
+            setNicknameView();
+            return;
+        }
+
+        Log.d(TAG, "setNickname() - Test");
+
+        myRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child(getString(R.string.db_child_nick)).exists()) {
+                    nickname = snapshot.child(getString(R.string.db_child_nick)).getValue().toString();
+                    setNicknameView();
+
+                    Log.d(TAG, "setNickname(): " + nickname);
+                } else {
+                    Log.d(TAG, "setNickname(): Failed");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                setNicknameView();
+                Log.d(TAG, "setNickname() - The read failed: " + error.getCode());
+            }
+        });
+    }
+
+    private void setNicknameView() {
+        Log.d(TAG, "setNicknameView()");
+        if (nickname == null) {
+            tv_nick.setText("Null");
+            Log.d(TAG, "setNicknameView() - Null");
+        } else {
+            tv_nick.setText(nickname);
+            Log.d(TAG, "setNicknameView() - " + nickname);
+        }
+    }
+
+    private void sendIntent(String data) {
+        Log.d(TAG, "sendIntent(" + data + ")");
+        if (data == "Login") {
+            Intent intent_Login = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent_Login);
+        } else if (data == "Friend") {
+            Intent intent_Friend = new Intent(getApplicationContext(), FriendActivity.class);
+            startActivity(intent_Friend);
+            return;
+        }
+
+        finish();
+    }
+
+    private void refresh() {
+        setUser();
+        setNickname();
+    }
+
+    private void logout() {
+        Log.d(TAG, "logout()");
+        if (firebaseAuth.getCurrentUser() == null) {
+            Log.d(TAG, "logout() - Failed");
+            return;
+        }
+        firebaseAuth.signOut();
+        sendIntent("Login");
+        Log.d(TAG, "logout() - Successful");
+    }
+
+
+
+
+
+    //
+    // Permission Method
+    //
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

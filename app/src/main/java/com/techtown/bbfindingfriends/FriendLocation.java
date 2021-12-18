@@ -1,28 +1,18 @@
 package com.techtown.bbfindingfriends;
 
-import android.util.Log;
-
 public class FriendLocation {
-    private static final String TAG = "Location";
-
-    private double exception = R.integer.code_location_null;
-
     private double Latitude;
     private double Longtitude;
     private double Altitude;
 
-    public FriendLocation() {
-        Latitude = exception;
-        Longtitude = exception;
-        Altitude = exception;
+    private double exception() {
+        return R.integer.code_location_null;
     }
 
-    public boolean checkException() {
-        if (Latitude == exception) return false;
-        if (Longtitude == exception) return false;
-        if (Altitude == exception) return false;
-
-        return true;
+    public FriendLocation() {
+        Latitude = exception();
+        Longtitude = exception();
+        Altitude = exception();
     }
 
     public FriendLocation(double latitude, double longtitude, double altitude) {
@@ -36,7 +26,6 @@ public class FriendLocation {
     }
 
     public void setLatitude(double latitude) {
-        Log.d(TAG, "setLatitude(" + latitude + ")");
         Latitude = latitude;
     }
 
@@ -45,7 +34,6 @@ public class FriendLocation {
     }
 
     public void setLongtitude(double longtitude) {
-        Log.d(TAG, "setLongtitude(" + longtitude + ")");
         Longtitude = longtitude;
     }
 
@@ -54,7 +42,6 @@ public class FriendLocation {
     }
 
     public void setAltitude(double altitude) {
-        Log.d(TAG, "setAltitude(" + altitude + ")");
         Altitude = altitude;
     }
 }
