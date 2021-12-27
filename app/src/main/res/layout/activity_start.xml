@@ -6,4 +6,4 @@
     android:layout_height="200dp"
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-    tools:context=".StartActivity"/>
+    tools:context=".StartActivity" />

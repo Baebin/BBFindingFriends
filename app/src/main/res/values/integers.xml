@@ -4,4 +4,7 @@
     <integer name="code_autoLogin">011</integer>
     <integer name="code_login">100</integer>
     <integer name="code_loginFailed">101</integer>
+    <integer name="code_foregroud">1000</integer>
+
+    <integer name="code_location_null">79513</integer>
 </resources>

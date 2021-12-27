@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         fdb = FirebaseDatabase.getInstance();
-        myRef = fdb.getReference("Users");
+        myRef = fdb.getReference(getString(R.string.db_users));
 
         final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                 int i = 0;
                 for (DataSnapshot child : snapshot.getChildren()) {
                     i++;
-                    String nick = child.child("Nickname").getValue().toString();
+                    String nick = child.child(getString(R.string.db_child_nick)).getValue().toString();
                     Log.d(TAG, i + ". " + nick + ": " + child);
 
                     if (nickname.toLowerCase().equals(nick.toLowerCase())) {
@@ -157,7 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     FirebaseUser user = task.getResult().getUser();
                     String UID = user.getUid();
-                    myRef.child(UID).child("Nickname").setValue(nickname);
+                    myRef.child(UID).child(getString(R.string.db_child_nick)).setValue(nickname);
 
                     Log.d(TAG, "UID: " + UID);
 

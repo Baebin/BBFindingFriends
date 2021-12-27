@@ -13,11 +13,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -71,7 +74,8 @@ public class StartActivity extends AppCompatActivity {
                 Log.d(TAG, "Email: " + email + "\n"
                         + "pw: " + pw);
 
-                if (email != null && pw != null) {
+                if (email != null && !email.equals("")
+                    && pw != null && !pw.equals("")) {
 
                     if (email != null && pw != null) {
                         firebaseAuth.signInWithEmailAndPassword(email, pw).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -96,14 +100,18 @@ public class StartActivity extends AppCompatActivity {
                             }
                         });
                     }
+                } else if (firstLogin) {
+                    sendIntent("Login");
                 }
                 break;
             default:
+                sendIntent("Login");
                 break;
         }
     }
 
     private void sendIntent(String data) {
+        Log.d(TAG, "sendIntent(" + data + ")");
         if (data == "Main") {
             Intent intent_Main = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent_Main);
